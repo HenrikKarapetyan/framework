@@ -27,41 +27,36 @@ class Kernel implements KernelInterface
     /** @var array<string> */
     private array $controllerPaths = [];
 
-    public function __construct(private readonly DependencyInjectorInterface $dependencyInjector) {}
-
-
     private array $eventSubscribers = [];
-    private array $attrParsers = [];
-     private array $services = [];
+    private array $attrParsers      = [];
+    private array $services         = [];
 
+    private $allComponents = [];
+
+    public function __construct(private readonly DependencyInjectorInterface $dependencyInjector) {}
 
     /**
      * @param array<string> $components
      */
     public function initialize(array $components): void
     {
+
         foreach ($components as $component) {
+            $this->allComponents[] = $component;
             /** @var ComponentInterface $componentInstance */
             $componentInstance = new $component();
 
             if ($componentInstance instanceof DependsOnAwareInterface) {
-                foreach ($componentInstance->dependsOn() as $dependency) {
-                    $dependencyInstance = new $dependency();
-                    if ($dependencyInstance instanceof DependsOnAwareInterface) {
-                        $this->initialize($dependencyInstance->dependsOn());
-                    }
-                }
+                $this->initialize($componentInstance->dependsOn());
             }
 
-            var_dump($component);
             $this->getComponentDefinitions($componentInstance);
         }
     }
 
-    public function getComponentDefinitions(ComponentInterface $componentInstance)
+    public function getComponentDefinitions(ComponentInterface $componentInstance): void
     {
-        var_dump($componentInstance->getServices());
-        $this->services          = array_merge_recursive($this->services, $componentInstance->getServices());
+        $this->services = array_merge_recursive($this->services, $componentInstance->getServices());
 
         if ($componentInstance instanceof EventSubscriberAwareInterface) {
 
@@ -85,8 +80,7 @@ class Kernel implements KernelInterface
         }
     }
 
-
-    public function load()
+    public function load(): void
     {
         $this->dependencyInjector->load($this->services);
 
