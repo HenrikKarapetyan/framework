@@ -1,5 +1,5 @@
 {
-    "name": "hk/framework",
+    "name": "henrik/framework",
     "minimum-stability": "dev",
     "autoload": {
         "psr-4": {
