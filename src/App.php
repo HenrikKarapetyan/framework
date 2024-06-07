@@ -21,6 +21,9 @@ class App
 
     private EnvironmentInterface $environment;
 
+
+    public const DEFAULT_ENV = 'dev';
+
     public function __construct()
     {
         $this->dependencyInjector = DependencyInjector::instance();
@@ -105,13 +108,19 @@ class App
 
     private function getBaseParams(): array
     {
+        $env = self::DEFAULT_ENV;
+
+        if ($this->environment->has('app') && is_array($this->environment->get('app'))){
+            $env = $this->environment->get('app')['env'];
+        }
+
         return [
             ServiceScope::PARAM->value => [
-                'viewDirectory'   => $this->getDir('templates'),
-                'assetsDir'       => $this->getDir('public'),
-                'sessionSavePath' => $this->getOutputDirectory() . $this->environment->get('app')['env'] . '/session/',
-                'cachePath'       => $this->getOutputDirectory() . $this->environment->get('app')['env'] . '/cache/',
-                'logsPath'        => $this->getOutputDirectory() . $this->environment->get('app')['env'] . '/logs/',
+                'viewDirectory'     => $this->getDir('templates'),
+                'assetsDir'         => $this->getDir('public'),
+                'sessionSavePath'   => $this->getOutputDirectory() . $env . '/session/',
+                'cachePath'         => $this->getOutputDirectory() . $env . '/cache/',
+                'logsSaveDirectory' => $this->getOutputDirectory() . $env . '/logs/',
             ],
         ];
 
