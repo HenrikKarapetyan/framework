@@ -1,0 +1,163 @@
+<?php
+
+namespace Henrik\Framework;
+
+use Henrik\Contracts\AttributeParser\AttributesParserProcessorInterface;
+use Henrik\Contracts\ComponentInterface;
+use Henrik\Contracts\ComponentInterfaces\AttributesAndParsersAwareInterface;
+use Henrik\Contracts\ComponentInterfaces\ControllerAwareInterface;
+use Henrik\Contracts\ComponentInterfaces\DependsOnAwareInterface;
+use Henrik\Contracts\ComponentInterfaces\EventSubscriberAwareInterface;
+use Henrik\Contracts\ComponentInterfaces\OnBootstrapAwareInterface;
+use Henrik\Contracts\ComponentInterfaces\TemplateAwareInterface;
+use Henrik\Contracts\DependencyInjectorInterface;
+use Henrik\Contracts\EventDispatcherInterface;
+use InvalidArgumentException;
+
+class Kernel implements KernelInterface
+{
+    /**
+     * @var array
+     */
+    private array $onBootstrapEvents = [];
+
+    /** @var array<string> */
+    private array $templatePaths = [];
+
+    /** @var array<string> */
+    private array $controllerPaths = [];
+
+    public function __construct(private readonly DependencyInjectorInterface $dependencyInjector) {}
+
+    /**
+     * @param array<string> $components
+     */
+    public function initialize(array $components): void
+    {
+        foreach ($components as $component) {
+            /** @var ComponentInterface $componentInstance */
+            $componentInstance = new $component();
+
+            if ($componentInstance instanceof DependsOnAwareInterface) {
+                foreach ($componentInstance->dependsOn() as $dependency) {
+                    $dependencyInstance = new $dependency();
+                    if ($dependencyInstance instanceof DependsOnAwareInterface) {
+                        $this->initialize($dependencyInstance->dependsOn());
+                    }
+                }
+            }
+        }
+
+        $eventSubscribers = [];
+        $attrParsers      = [];
+        $services         = [];
+        $templatePaths    = [];
+        $controllerPaths  = [];
+
+        foreach ($components as $component) {
+
+            /** @var ComponentInterface $componentInstance */
+            $componentInstance = new $component();
+            $services          = array_merge_recursive($services, $componentInstance->getServices());
+
+            if ($componentInstance instanceof EventSubscriberAwareInterface) {
+
+                $eventSubscribers = array_merge_recursive($eventSubscribers, $componentInstance->getEventSubscribers());
+            }
+
+            if ($componentInstance instanceof AttributesAndParsersAwareInterface) {
+                $attrParsers = array_merge_recursive($attrParsers, $componentInstance->getAttributesAndParsers());
+            }
+
+            if ($componentInstance instanceof TemplateAwareInterface) {
+                $templatePaths[] = $componentInstance->getTemplatesPath();
+            }
+
+            if ($componentInstance instanceof ControllerAwareInterface) {
+                $controllerPaths[] = $componentInstance->getControllersPath();
+            }
+
+            if ($componentInstance instanceof OnBootstrapAwareInterface) {
+                $this->onBootstrapEvents = array_merge_recursive($this->onBootstrapEvents, $componentInstance->onBootstrapDispatchEvents());
+            }
+
+        }
+
+        $this->dependencyInjector->load($services);
+
+        $this->loadComponentsEventSubscribers($eventSubscribers);
+        $this->loadComponentsAttributesAndParsers($attrParsers);
+        $this->setTemplatesPath($templatePaths);
+        $this->loadControllersByPath($controllerPaths);
+    }
+
+    public function getOnBootstrapEvents(): array
+    {
+        return $this->onBootstrapEvents;
+    }
+
+    /**
+     * @param array<string, array<string>> $eventSubscribers
+     *
+     * @return void
+     */
+    private function loadComponentsEventSubscribers(array $eventSubscribers): void
+    {
+
+        foreach ($eventSubscribers as $eventDispatcherDefinitionId => $eventSubscriberItems) {
+
+            if ($this->dependencyInjector->has($eventDispatcherDefinitionId)) {
+                /** @var EventDispatcherInterface $eventDispatcher */
+                $eventDispatcher = $this->dependencyInjector->get($eventDispatcherDefinitionId);
+
+                if (!is_array($eventSubscriberItems)) {
+                    throw new InvalidArgumentException(sprintf('Given value must be array `%s` given!', gettype($eventSubscriberItems)));
+                }
+
+                foreach ($eventSubscriberItems as $eventSubscriber) {
+                    $eventDispatcher->addSubscriber($this->dependencyInjector->get($eventSubscriber));
+                }
+
+            }
+        }
+    }
+
+    /**
+     * @param array<string> $attrParsers
+     *
+     * @return void
+     */
+    private function loadComponentsAttributesAndParsers(array $attrParsers): void
+    {
+        if ($this->dependencyInjector->has(AttributesParserProcessorInterface::class)) {
+            /** @var AttributesParserProcessorInterface $attributeParserProcessor */
+            $attributeParserProcessor = $this->dependencyInjector->get(AttributesParserProcessorInterface::class);
+
+            foreach ($attrParsers as $attributeClass => $parserClass) {
+
+                $attributeParserProcessor->addParser($attributeClass, $parserClass);
+            }
+        }
+    }
+
+    /**
+     * @param array<string> $templatePaths
+     *
+     * @return void
+     */
+    private function setTemplatesPath(array $templatePaths): void
+    {
+        $this->templatePaths = array_merge_recursive($templatePaths, $this->templatePaths);
+    }
+
+    /**
+     * @param array<string> $controllerPaths
+     *
+     * @return void
+     */
+    private function loadControllersByPath(array $controllerPaths): void
+    {
+        $this->controllerPaths = array_merge_recursive($controllerPaths, $this->controllerPaths);
+
+    }
+}

@@ -1,0 +1,41 @@
+{
+    "name": "hk/framework",
+    "minimum-stability": "dev",
+    "autoload": {
+        "psr-4": {
+            "Henrik\\Framework\\": "src/"
+        }
+    },
+    "authors": [
+        {
+            "name": "Henrik Karapetyan",
+            "email": "g.karapetyan@tool-kit.tech"
+        }
+    ],
+    "require": {
+        "henrik/core": "dev-main",
+        "henrik/web": "dev-master"
+    },    "require-dev": {
+    "phpmd/phpmd": "^2.15",
+    "friendsofphp/php-cs-fixer": "dev-master",
+    "phpstan/phpstan": "2.0.x-dev"
+},
+    "scripts": {
+        "phpstan": [
+            "Composer\\Config::disableProcessTimeout",
+            "./vendor/bin/phpstan --memory-limit=-1"
+        ],
+        "fix": [
+            "Composer\\Config::disableProcessTimeout",
+            "PHP_CS_FIXER_IGNORE_ENV=1 ./vendor/bin/php-cs-fixer fix src --diff -vvv --config=.php-cs-fixer.dist.php"
+        ],
+        "phpmd-ci": [
+            "Composer\\Config::disableProcessTimeout",
+            "./vendor/bin/phpmd src gitlab ./phpmd.xml > phpmd-report.json"
+        ],
+        "phpmd-html": [
+            "Composer\\Config::disableProcessTimeout",
+            "./vendor/bin/phpmd src html ./phpmd.xml > phpmd-report.html"
+        ]
+    }
+}
