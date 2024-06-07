@@ -39,6 +39,7 @@ class App
         /** @var Kernel $kernel */
         $kernel = $this->dependencyInjector->get(KernelInterface::class);
         $kernel->initialize($this->getComponents());
+        $kernel->load();
 
         $onBootstrapEvents = $kernel->getOnBootstrapEvents();
 

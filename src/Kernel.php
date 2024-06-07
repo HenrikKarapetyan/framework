@@ -29,6 +29,12 @@ class Kernel implements KernelInterface
 
     public function __construct(private readonly DependencyInjectorInterface $dependencyInjector) {}
 
+
+    private array $eventSubscribers = [];
+    private array $attrParsers = [];
+     private array $services = [];
+
+
     /**
      * @param array<string> $components
      */
@@ -46,49 +52,47 @@ class Kernel implements KernelInterface
                     }
                 }
             }
+
+            var_dump($component);
+            $this->getComponentDefinitions($componentInstance);
+        }
+    }
+
+    public function getComponentDefinitions(ComponentInterface $componentInstance)
+    {
+        var_dump($componentInstance->getServices());
+        $this->services          = array_merge_recursive($this->services, $componentInstance->getServices());
+
+        if ($componentInstance instanceof EventSubscriberAwareInterface) {
+
+            $this->eventSubscribers = array_merge_recursive($this->eventSubscribers, $componentInstance->getEventSubscribers());
         }
 
-        $eventSubscribers = [];
-        $attrParsers      = [];
-        $services         = [];
-        $templatePaths    = [];
-        $controllerPaths  = [];
-
-        foreach ($components as $component) {
-
-            /** @var ComponentInterface $componentInstance */
-            $componentInstance = new $component();
-            $services          = array_merge_recursive($services, $componentInstance->getServices());
-
-            if ($componentInstance instanceof EventSubscriberAwareInterface) {
-
-                $eventSubscribers = array_merge_recursive($eventSubscribers, $componentInstance->getEventSubscribers());
-            }
-
-            if ($componentInstance instanceof AttributesAndParsersAwareInterface) {
-                $attrParsers = array_merge_recursive($attrParsers, $componentInstance->getAttributesAndParsers());
-            }
-
-            if ($componentInstance instanceof TemplateAwareInterface) {
-                $templatePaths[] = $componentInstance->getTemplatesPath();
-            }
-
-            if ($componentInstance instanceof ControllerAwareInterface) {
-                $controllerPaths[] = $componentInstance->getControllersPath();
-            }
-
-            if ($componentInstance instanceof OnBootstrapAwareInterface) {
-                $this->onBootstrapEvents = array_merge_recursive($this->onBootstrapEvents, $componentInstance->onBootstrapDispatchEvents());
-            }
-
+        if ($componentInstance instanceof AttributesAndParsersAwareInterface) {
+            $this->attrParsers = array_merge_recursive($this->attrParsers, $componentInstance->getAttributesAndParsers());
         }
 
-        $this->dependencyInjector->load($services);
+        if ($componentInstance instanceof TemplateAwareInterface) {
+            $this->templatePaths[] = $componentInstance->getTemplatesPath();
+        }
 
-        $this->loadComponentsEventSubscribers($eventSubscribers);
-        $this->loadComponentsAttributesAndParsers($attrParsers);
-        $this->setTemplatesPath($templatePaths);
-        $this->loadControllersByPath($controllerPaths);
+        if ($componentInstance instanceof ControllerAwareInterface) {
+            $this->controllerPaths[] = $componentInstance->getControllersPath();
+        }
+
+        if ($componentInstance instanceof OnBootstrapAwareInterface) {
+            $this->onBootstrapEvents = array_merge_recursive($this->onBootstrapEvents, $componentInstance->onBootstrapDispatchEvents());
+        }
+    }
+
+
+    public function load()
+    {
+        $this->dependencyInjector->load($this->services);
+
+        $this->loadComponentsEventSubscribers($this->eventSubscribers);
+        $this->loadComponentsAttributesAndParsers($this->attrParsers);
+        $this->loadControllersByPath($this->controllerPaths);
     }
 
     public function getOnBootstrapEvents(): array
