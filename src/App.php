@@ -27,9 +27,11 @@ class App
         $this->dependencyInjector->setMode(InjectorModes::AUTO_REGISTER);
         $rootServices = require 'config/baseServices.php';
         $this->dependencyInjector->load(array_merge_recursive($this->getServices(), $rootServices));
-        $this->dependencyInjector->load($this->getBaseParams());
         /** @var Environment $environment */
         $this->environment = $this->dependencyInjector->get(EnvironmentInterface::class);
+
+        $this->dependencyInjector->load($this->getBaseParams());
+
     }
 
     public function run(): void
