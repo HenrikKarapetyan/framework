@@ -31,8 +31,6 @@ class Kernel implements KernelInterface
     private array $attrParsers      = [];
     private array $services         = [];
 
-    private $allComponents = [];
-
     public function __construct(private readonly DependencyInjectorInterface $dependencyInjector) {}
 
     /**
@@ -42,7 +40,6 @@ class Kernel implements KernelInterface
     {
 
         foreach ($components as $component) {
-            $this->allComponents[] = $component;
             /** @var ComponentInterface $componentInstance */
             $componentInstance = new $component();
 

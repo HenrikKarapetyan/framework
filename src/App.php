@@ -4,6 +4,7 @@ namespace Henrik\Framework;
 
 use Henrik\Contracts\AttributeParser\AttributesParserProcessorInterface;
 use Henrik\Contracts\Enums\InjectorModes;
+use Henrik\Contracts\Enums\ServiceScope;
 use Henrik\Contracts\Environment\EnvironmentInterface;
 use Henrik\Contracts\EventDispatcherInterface;
 use Henrik\DI\DependencyInjector;
@@ -26,6 +27,7 @@ class App
         $this->dependencyInjector->setMode(InjectorModes::AUTO_REGISTER);
         $rootServices = require 'config/baseServices.php';
         $this->dependencyInjector->load(array_merge_recursive($this->getServices(), $rootServices));
+        $this->dependencyInjector->load($this->getBaseParams());
         /** @var Environment $environment */
         $this->environment = $this->dependencyInjector->get(EnvironmentInterface::class);
     }
@@ -97,6 +99,20 @@ class App
         }
 
         throw new FileNotFoundException($filepath);
+    }
+
+    private function getBaseParams(): array
+    {
+        return [
+            ServiceScope::PARAM->value => [
+                'viewDirectory'   => $this->getDir('templates'),
+                'assetsDir'       => $this->getDir('public'),
+                'sessionSavePath' => $this->getOutputDirectory() . $this->environment->get('app')['env'] . '/session/',
+                'cachePath'       => $this->getOutputDirectory() . $this->environment->get('app')['env'] . '/cache/',
+                'logsPath'        => $this->getOutputDirectory() . $this->environment->get('app')['env'] . '/logs/',
+            ],
+        ];
+
     }
 
     private function getDir(?string $dir = null): string
