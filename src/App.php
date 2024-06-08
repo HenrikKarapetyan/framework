@@ -15,14 +15,12 @@ use ReflectionClass;
 
 class App
 {
+    public const DEFAULT_ENV   = 'dev';
     private ?string $configDir = null;
 
     private DependencyInjector $dependencyInjector;
 
     private EnvironmentInterface $environment;
-
-
-    public const DEFAULT_ENV = 'dev';
 
     public function __construct()
     {
@@ -39,7 +37,6 @@ class App
 
     public function run(): void
     {
-
         $this->environment->load($this->getEnvironmentFile());
         $this->environment->load($this->getEnvironmentFile($this->environment->get('app')['env']));
 
@@ -87,7 +84,7 @@ class App
 
     public function getOutputDirectory(): string
     {
-        return $this->configDir ?? realpath($this->getProjectDir() . '/../var/');
+        return $this->getDir('var');
     }
 
     public function getEnvironmentFile(?string $prefix = null): string
@@ -110,7 +107,7 @@ class App
     {
         $env = self::DEFAULT_ENV;
 
-        if ($this->environment->has('app') && is_array($this->environment->get('app'))){
+        if ($this->environment->has('app') && is_array($this->environment->get('app'))) {
             $env = $this->environment->get('app')['env'];
         }
 
@@ -129,6 +126,9 @@ class App
     private function getDir(?string $dir = null): string
     {
         $dir = $dir ? DIRECTORY_SEPARATOR . $dir . DIRECTORY_SEPARATOR : '';
+        if (!is_dir($this->getProjectDir() . $dir)) {
+            Filesystem::mkdir($this->getProjectDir() . $dir);
+        }
 
         return $this->configDir ?? realpath($this->getProjectDir() . $dir);
 
