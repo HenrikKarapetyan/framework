@@ -39,7 +39,7 @@ class BaseKernel implements KernelInterface
 
     public function getComponentDefinitions(ComponentInterface $componentInstance): void
     {
-        $this->services = array_merge($this->services, $componentInstance->getServices());
+        $this->services = array_merge_recursive($this->services, $componentInstance->getServices());
 
         if ($componentInstance instanceof EventSubscriberAwareInterface) {
 
