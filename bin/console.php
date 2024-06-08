@@ -1,9 +1,8 @@
 <?php
 
+
 use Henrik\Framework\App;
 
 require 'vendor/autoload.php';
 
-$services = require 'config/services.php';
-
-(new App())->run();
+(new App(new \Henrik\Framework\WebKernel()))->run();
