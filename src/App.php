@@ -44,6 +44,7 @@ class App
     {
         $this->environment->load($this->getEnvironmentFile());
         $this->environment->load($this->getEnvironmentFile($this->environment->get('app')['env']));
+        $this->dependencyInjector->load($this->getBaseParams());
 
         $components = $this->getComponents();
         $this->kernel->initialize($components);
