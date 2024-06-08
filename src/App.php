@@ -42,6 +42,9 @@ class App
 
     public function run(): void
     {
+        $components = $this->getComponents();
+        $this->kernel->initialize($components);
+
         $this->dependencyInjector->load($this->kernel->getServices());
         $this->loadComponentsEventSubscribers($this->kernel->getEventSubscribers());
         $this->loadComponentsAttributesAndParsers($this->kernel->getAttrParsers());

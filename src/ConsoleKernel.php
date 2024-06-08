@@ -12,6 +12,7 @@ class ConsoleKernel extends BaseKernel
 
     public function getComponentDefinitions(ComponentInterface $componentInstance): void
     {
+        parent::getComponentDefinitions($componentInstance);
 
         if ($componentInstance instanceof CommandAwareInterface) {
             $this->commandPaths = array_merge($componentInstance->getCommands(), $this->commandPaths);
