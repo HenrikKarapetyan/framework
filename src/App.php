@@ -31,14 +31,14 @@ class App
         /** @var Environment $environment */
         $this->environment = $this->dependencyInjector->get(EnvironmentInterface::class);
 
-        $this->dependencyInjector->load($this->getBaseParams());
-
     }
 
     public function run(): void
     {
         $this->environment->load($this->getEnvironmentFile());
         $this->environment->load($this->getEnvironmentFile($this->environment->get('app')['env']));
+
+        $this->dependencyInjector->load($this->getBaseParams());
 
         /** @var Kernel $kernel */
         $kernel = $this->dependencyInjector->get(KernelInterface::class);
