@@ -42,6 +42,9 @@ class App
 
     public function run(): void
     {
+        $this->environment->load($this->getEnvironmentFile());
+        $this->environment->load($this->getEnvironmentFile($this->environment->get('app')['env']));
+
         $components = $this->getComponents();
         $this->kernel->initialize($components);
 
