@@ -115,9 +115,9 @@ class App
             ServiceScope::PARAM->value => [
                 'viewDirectory'     => $this->getDir('templates'),
                 'assetsDir'         => $this->getDir('public'),
-                'sessionSavePath'   => $this->getOutputDirectory() . $env . '/session/',
-                'cachePath'         => $this->getOutputDirectory() . $env . '/cache/',
-                'logsSaveDirectory' => $this->getOutputDirectory() . $env . '/logs/',
+                'sessionSavePath'   => $this->getOutputDirectory() . DIRECTORY_SEPARATOR . $env . '/session/',
+                'cachePath'         => $this->getOutputDirectory() . DIRECTORY_SEPARATOR . $env . '/cache/',
+                'logsSaveDirectory' => $this->getOutputDirectory() . DIRECTORY_SEPARATOR . $env . '/logs/',
             ],
         ];
 
