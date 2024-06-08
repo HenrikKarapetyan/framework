@@ -54,6 +54,8 @@ class App
             $this->loadTemplatePath($this->kernel->geTemplatePaths());
         }
 
+        $this->loadProjectSourceClasses();
+
         $onBootstrapEvents = $this->kernel->getOnBootstrapEvents();
 
         foreach ($onBootstrapEvents as $eventDispatcherDefinitionId => $eventNamePairs) {
