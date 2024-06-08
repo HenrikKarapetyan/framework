@@ -14,4 +14,6 @@ interface KernelInterface
     public function getAttrParsers(): array;
 
     public function getServices(): array;
+
+    public function getOnBootstrapEvents();
 }

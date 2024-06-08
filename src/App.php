@@ -4,6 +4,7 @@ namespace Henrik\Framework;
 
 use Henrik\Contracts\Enums\InjectorModes;
 use Henrik\Contracts\Environment\EnvironmentInterface;
+use Henrik\Contracts\EventDispatcherInterface;
 use Henrik\DI\DependencyInjector;
 use Henrik\Env\Environment;
 
@@ -48,6 +49,22 @@ class App
         if ($this->kernel instanceof WebKernel) {
             $this->loadControllersByPath($this->kernel->getControllerPaths());
             $this->loadTemplatePath($this->kernel->geTemplatePaths());
+        }
+
+        $onBootstrapEvents = $this->kernel->getOnBootstrapEvents();
+
+        foreach ($onBootstrapEvents as $eventDispatcherDefinitionId => $eventNamePairs) {
+
+            /** @var EventDispatcherInterface $eventDispatcher */
+            $eventDispatcher = $this->dependencyInjector->get($eventDispatcherDefinitionId);
+
+            foreach ($eventNamePairs as $event => $name) {
+                /** @var object $eventObject */
+                $eventObject = $this->dependencyInjector->get($event);
+
+                $eventDispatcher->dispatch($eventObject, $name);
+
+            }
         }
     }
 }
