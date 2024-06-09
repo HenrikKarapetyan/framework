@@ -5,4 +5,4 @@ use Henrik\Framework\ConsoleKernel;
 
 require 'vendor/autoload.php';
 
-(new App(new ConsoleKernel()))->run();
+(new App(new ConsoleKernel($argc, $argv)))->run();

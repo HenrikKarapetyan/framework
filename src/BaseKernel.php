@@ -6,7 +6,6 @@ use Henrik\Contracts\ComponentInterface;
 use Henrik\Contracts\ComponentInterfaces\AttributesAndParsersAwareInterface;
 use Henrik\Contracts\ComponentInterfaces\DependsOnAwareInterface;
 use Henrik\Contracts\ComponentInterfaces\EventSubscriberAwareInterface;
-use Henrik\Contracts\ComponentInterfaces\OnBootstrapAwareInterface;
 
 class BaseKernel implements KernelInterface
 {
@@ -24,8 +23,9 @@ class BaseKernel implements KernelInterface
      * @var array<string, string>
      */
     protected array $attrParsers = [];
+
     /**
-     * @var array<string, array<mixed>>
+     * @var array<string, array<string, int|string>>
      */
     protected array $services = [];
 
@@ -60,9 +60,6 @@ class BaseKernel implements KernelInterface
             $this->attrParsers = array_merge_recursive($this->attrParsers, $componentInstance->getAttributesAndParsers());
         }
 
-        if ($componentInstance instanceof OnBootstrapAwareInterface) {
-            $this->onBootstrapEvents = array_merge_recursive($this->onBootstrapEvents, $componentInstance->onBootstrapDispatchEvents());
-        }
     }
 
     /**

@@ -83,15 +83,13 @@ trait AppComponentServicesLoaderTrait
     }
 
     /**
-     * @param array<string> $controllerPaths
-     * @param array         $templatePaths
+     * @param array<string> $templatePaths
      *
      * @return void
      */
     protected function loadTemplatePath(array $templatePaths): void
     {
         $this->templatePaths = array_merge_recursive($templatePaths, $this->templatePaths);
-
     }
 
     private function loadProjectSourceClasses(): void

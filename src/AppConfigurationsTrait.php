@@ -6,6 +6,9 @@ use Henrik\Contracts\Enums\ServiceScope;
 use Henrik\Filesystem\Exceptions\FileNotFoundException;
 use Henrik\Filesystem\Filesystem;
 
+/**
+ * @SuppressWarnings(PHPMD.Superglobals)
+ */
 trait AppConfigurationsTrait
 {
     public function getConfigDir(): string
@@ -13,7 +16,7 @@ trait AppConfigurationsTrait
         return $this->getDir('config');
     }
 
-    public function getProjectDir(): string
+    public function getProjectDir(): bool|string
     {
         $docRoot = $_SERVER['DOCUMENT_ROOT'];
         if ($docRoot !== '') {

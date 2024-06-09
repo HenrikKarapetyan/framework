@@ -4,6 +4,7 @@ namespace Henrik\Framework;
 
 use Henrik\Contracts\ComponentInterface;
 use Henrik\Contracts\ComponentInterfaces\ControllerAwareInterface;
+use Henrik\Contracts\ComponentInterfaces\OnBootstrapAwareInterface;
 use Henrik\Contracts\ComponentInterfaces\TemplateAwareInterface;
 
 class WebKernel extends BaseKernel
@@ -17,7 +18,7 @@ class WebKernel extends BaseKernel
     /**
      * @return array<string>
      */
-    public function geTemplatePaths(): array
+    public function getTemplatePaths(): array
     {
         return $this->templatePaths;
     }
@@ -35,12 +36,15 @@ class WebKernel extends BaseKernel
         parent::getComponentDefinitions($componentInstance);
 
         if ($componentInstance instanceof TemplateAwareInterface) {
-            $this->templatePaths = array_merge($this->templatePaths, $componentInstance->getTemplatesPath());
+            $this->templatePaths[] = $componentInstance->getTemplatesPath();
         }
 
         if ($componentInstance instanceof ControllerAwareInterface) {
-            $this->controllerPaths = array_merge($this->controllerPaths, $componentInstance->getControllersPath());
+            $this->controllerPaths[] = $componentInstance->getControllersPath();
         }
 
+        if ($componentInstance instanceof OnBootstrapAwareInterface) {
+            $this->onBootstrapEvents = array_merge_recursive($this->onBootstrapEvents, $componentInstance->onBootstrapDispatchEvents());
+        }
     }
 }

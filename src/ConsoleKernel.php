@@ -7,8 +7,14 @@ use Henrik\Contracts\ComponentInterfaces\CommandAwareInterface;
 
 class ConsoleKernel extends BaseKernel
 {
-    /** @var array<string> */
+    /** @var string[] */
     protected array $commandPaths = [];
+
+    /**
+     * @param int           $argc
+     * @param array<string> $argv
+     */
+    public function __construct(protected int $argc, protected array $argv) {}
 
     public function getComponentDefinitions(ComponentInterface $componentInstance): void
     {
@@ -17,6 +23,19 @@ class ConsoleKernel extends BaseKernel
         if ($componentInstance instanceof CommandAwareInterface) {
             $this->commandPaths = array_merge($componentInstance->getCommands(), $this->commandPaths);
         }
+    }
+
+    public function getArgc(): int
+    {
+        return $this->argc;
+    }
+
+    /**
+     * @return string[]
+     */
+    public function getArgv(): array
+    {
+        return $this->argv;
     }
 
     /**

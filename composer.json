@@ -12,6 +12,7 @@
       "email": "henrikkarapetyan@gmail.com"
     }
   ],
+  "bin": ["bin/console.php"],
   "require": {
     "henrik/core": "dev-main",
     "henrik/web": "dev-master",

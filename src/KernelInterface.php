@@ -20,7 +20,7 @@ interface KernelInterface
     public function getAttrParsers(): array;
 
     /**
-     * @return array<string, array<mixed>>
+     * @return array<string, array<string, int|string>>
      */
     public function getServices(): array;
 

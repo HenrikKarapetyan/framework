@@ -2,6 +2,7 @@
 
 namespace Henrik\Framework;
 
+use Henrik\Console\Interfaces\CommandRunnerInterface;
 use Henrik\Contracts\Enums\InjectorModes;
 use Henrik\Contracts\Environment\EnvironmentInterface;
 use Henrik\Contracts\EventDispatcherInterface;
@@ -28,7 +29,8 @@ class App
      * @var array<string>
      */
     private array $templatePaths = [];
-    private ?string $configDir   = null;
+
+    private ?string $configDir = null;
 
     public function __construct(private KernelInterface $kernel)
     {
@@ -53,14 +55,25 @@ class App
         $this->loadComponentsEventSubscribers($this->kernel->getEventSubscribers());
         $this->loadComponentsAttributesAndParsers($this->kernel->getAttrParsers());
 
-        if ($this->kernel instanceof WebKernel) {
-            $this->loadControllersByPath($this->kernel->getControllerPaths());
-            $this->loadTemplatePath($this->kernel->geTemplatePaths());
-        }
-
         $this->loadProjectSourceClasses();
 
-        $onBootstrapEvents = $this->kernel->getOnBootstrapEvents();
+        if ($this->kernel instanceof ConsoleKernel) {
+            $this->runConsoleKernel($this->kernel);
+
+            return;
+        }
+
+        if ($this->kernel instanceof WebKernel) {
+            $this->runWebKernel($this->kernel);
+        }
+    }
+
+    private function runWebKernel(WebKernel $kernel): void
+    {
+        $this->loadControllersByPath($kernel->getControllerPaths());
+        $this->loadTemplatePath($kernel->getTemplatePaths());
+
+        $onBootstrapEvents = $kernel->getOnBootstrapEvents();
 
         foreach ($onBootstrapEvents as $eventDispatcherDefinitionId => $eventNamePairs) {
 
@@ -75,5 +88,12 @@ class App
 
             }
         }
+    }
+
+    private function runConsoleKernel(ConsoleKernel $kernel): void
+    {
+        /** @var CommandRunnerInterface $commandRunner */
+        $commandRunner = $this->dependencyInjector->get(CommandRunnerInterface::class);
+        $commandRunner->run($kernel->getArgc(), $kernel->getArgv());
     }
 }
