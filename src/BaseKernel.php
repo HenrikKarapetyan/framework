@@ -11,13 +11,23 @@ use Henrik\Contracts\ComponentInterfaces\OnBootstrapAwareInterface;
 class BaseKernel implements KernelInterface
 {
     /**
-     * @var array
+     * @var array<string, array<string, string>>
      */
     protected array $onBootstrapEvents = [];
 
+    /**
+     * @var array<string, array<string>>
+     */
     protected array $eventSubscribers = [];
-    protected array $attrParsers      = [];
-    protected array $services         = [];
+
+    /**
+     * @var array<string, string>
+     */
+    protected array $attrParsers = [];
+    /**
+     * @var array<string, array<mixed>>
+     */
+    protected array $services = [];
 
     /**
      * @param array<string> $components
@@ -55,38 +65,35 @@ class BaseKernel implements KernelInterface
         }
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getOnBootstrapEvents(): array
     {
         return $this->onBootstrapEvents;
     }
 
+    /**
+     * {@inheritDoc}
+     */
     public function getEventSubscribers(): array
     {
         return $this->eventSubscribers;
     }
 
-    public function setEventSubscribers(array $eventSubscribers): void
-    {
-        $this->eventSubscribers = $eventSubscribers;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     public function getAttrParsers(): array
     {
         return $this->attrParsers;
     }
 
-    public function setAttrParsers(array $attrParsers): void
-    {
-        $this->attrParsers = $attrParsers;
-    }
-
+    /**
+     * {@inheritDoc}
+     */
     public function getServices(): array
     {
         return $this->services;
-    }
-
-    public function setServices(array $services): void
-    {
-        $this->services = $services;
     }
 }

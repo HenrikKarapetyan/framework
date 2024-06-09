@@ -20,8 +20,6 @@ class ConsoleKernel extends BaseKernel
     }
 
     /**
-     * @param
-     *
      * @return array<string>
      */
     protected function getCommandPaths(): array
