@@ -4,7 +4,7 @@ namespace Henrik\Framework;
 
 use Henrik\Contracts\ComponentInterface;
 use Henrik\Contracts\ComponentInterfaces\ControllerAwareInterface;
-use Henrik\Contracts\ComponentInterfaces\OnWebBootstrapAwareInterface;
+use Henrik\Contracts\ComponentInterfaces\OnBootstrapAwareInterface;
 use Henrik\Contracts\ComponentInterfaces\TemplateAwareInterface;
 
 class WebKernel extends ConsoleKernel
@@ -43,8 +43,8 @@ class WebKernel extends ConsoleKernel
             $this->controllerPaths[] = $componentInstance->getControllersPath();
         }
 
-        if ($componentInstance instanceof OnWebBootstrapAwareInterface) {
-            $this->onBootstrapEvents = array_merge_recursive($this->onBootstrapEvents, $componentInstance->onWebBootstrapDispatchEvents());
+        if ($componentInstance instanceof OnBootstrapAwareInterface) {
+            $this->onBootstrapEvents = array_merge_recursive($this->onBootstrapEvents, $componentInstance->onBootstrapDispatchEvents());
         }
     }
 }

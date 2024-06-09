@@ -4,7 +4,6 @@ namespace Henrik\Framework;
 
 use Henrik\Contracts\ComponentInterface;
 use Henrik\Contracts\ComponentInterfaces\CommandAwareInterface;
-use Henrik\Contracts\ComponentInterfaces\OnBootstrapAwareInterface;
 
 class ConsoleKernel extends BaseKernel
 {
@@ -23,10 +22,6 @@ class ConsoleKernel extends BaseKernel
 
         if ($componentInstance instanceof CommandAwareInterface) {
             $this->commandPaths = array_merge($componentInstance->getCommands(), $this->commandPaths);
-        }
-
-        if ($componentInstance instanceof OnBootstrapAwareInterface) {
-            $this->onBootstrapEvents = array_merge_recursive($this->onBootstrapEvents, $componentInstance->onBootstrapDispatchEvents());
         }
     }
 
