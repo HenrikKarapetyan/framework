@@ -71,7 +71,6 @@ trait AppComponentServicesLoaderTrait
         }
     }
 
-
     /**
      * @param array<string> $templatePaths
      *
