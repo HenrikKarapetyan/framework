@@ -5,6 +5,7 @@ namespace Henrik\Framework;
 use Henrik\Contracts\Enums\ServiceScope;
 use Henrik\Filesystem\Exceptions\FileNotFoundException;
 use Henrik\Filesystem\Filesystem;
+use Henrik\Session\Cookie;
 
 /**
  * @SuppressWarnings(PHPMD.Superglobals)
@@ -125,6 +126,10 @@ trait AppConfigurationsTrait
                 'sessionSavePath'   => $this->getOutputDirectory() . DIRECTORY_SEPARATOR . $env . '/session/',
                 'cachePath'         => $this->getOutputDirectory() . DIRECTORY_SEPARATOR . $env . '/cache/',
                 'logsSaveDirectory' => $this->getOutputDirectory() . DIRECTORY_SEPARATOR . $env . '/logs/',
+                'cookies'           => [
+                    (new Cookie())->setName('default')->setValue('simple')->setHttpOnly(true)->setExpire(13123131)->setPath('/')->setDomain('.localhost')->setSecure(false),
+                ],
+                'sessionName' => 'app',
             ],
         ];
 
