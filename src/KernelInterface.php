@@ -28,4 +28,9 @@ interface KernelInterface
      * @return array<string, array<string, string>>
      */
     public function getOnBootstrapEvents(): array;
+
+    /**
+     * @return array<string, string>
+     */
+    public function getSourceRootPaths(): array;
 }

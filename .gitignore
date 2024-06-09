@@ -4,3 +4,4 @@ composer.lock
 .php-cs-fixer.cache
 phpmd-report.html
 public
+examples

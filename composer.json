@@ -6,6 +6,12 @@
       "Henrik\\Framework\\": "src/"
     }
   },
+
+  "autoload-dev": {
+    "psr-4": {
+      "Henrik\\Framework\\Samples\\": "examples/"
+    }
+  },
   "authors": [
     {
       "name": "Henrik Karapetyan",

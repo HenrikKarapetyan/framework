@@ -8,6 +8,7 @@ use Henrik\Contracts\Environment\EnvironmentInterface;
 use Henrik\Contracts\EventDispatcherInterface;
 use Henrik\DI\DependencyInjector;
 use Henrik\Env\Environment;
+use Henrik\Filesystem\Filesystem;
 
 class App
 {
@@ -55,7 +56,7 @@ class App
         $this->loadComponentsEventSubscribers($this->kernel->getEventSubscribers());
         $this->loadComponentsAttributesAndParsers($this->kernel->getAttrParsers());
 
-        $this->loadProjectSourceClasses();
+        $this->loadProjectSourceClasses($this->kernel->getSourceRootPaths());
 
         if ($this->kernel instanceof WebKernel) {
             $this->runWebKernel($this->kernel);
@@ -68,6 +69,22 @@ class App
 
             return;
         }
+    }
+
+    /**
+     * @param array<string, string> $sourceRootPaths
+     *
+     * @return string[]
+     */
+    public function getComponentSourceClasses(array $sourceRootPaths): array
+    {
+
+        $classes = [];
+        foreach ($sourceRootPaths as $namespace => $path) {
+            $classes = array_merge($classes, Filesystem::getPhpClassesFromDirectory($path, $namespace));
+        }
+
+        return $classes;
     }
 
     private function runWebKernel(WebKernel $kernel): void

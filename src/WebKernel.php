@@ -3,8 +3,8 @@
 namespace Henrik\Framework;
 
 use Henrik\Contracts\ComponentInterface;
-use Henrik\Contracts\ComponentInterfaces\OnControllerAwareInterface;
 use Henrik\Contracts\ComponentInterfaces\OnBootstrapAwareInterface;
+use Henrik\Contracts\ComponentInterfaces\OnControllerAwareInterface;
 use Henrik\Contracts\ComponentInterfaces\OnTemplateAwareInterface;
 
 class WebKernel extends ConsoleKernel

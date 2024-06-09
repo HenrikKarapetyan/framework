@@ -6,6 +6,7 @@ use Henrik\Contracts\ComponentInterface;
 use Henrik\Contracts\ComponentInterfaces\OnAttributesAndParsersAwareInterface;
 use Henrik\Contracts\ComponentInterfaces\OnDependsAwareInterface;
 use Henrik\Contracts\ComponentInterfaces\OnEventSubscriberAwareInterface;
+use Henrik\Contracts\ComponentInterfaces\OnSourcesAwareInterface;
 
 class BaseKernel implements KernelInterface
 {
@@ -28,6 +29,9 @@ class BaseKernel implements KernelInterface
      * @var array<string, array<string, int|string>>
      */
     protected array $services = [];
+
+    /** @var array<string, string> */
+    protected array $sourceRootPaths = [];
 
     /**
      * @param array<string> $components
@@ -54,6 +58,10 @@ class BaseKernel implements KernelInterface
         if ($componentInstance instanceof OnEventSubscriberAwareInterface) {
 
             $this->eventSubscribers = array_merge_recursive($this->eventSubscribers, $componentInstance->getEventSubscribers());
+        }
+
+        if ($componentInstance instanceof OnSourcesAwareInterface) {
+            $this->sourceRootPaths = array_merge($this->sourceRootPaths, $componentInstance->getSourcesDirectories());
         }
 
         if ($componentInstance instanceof OnAttributesAndParsersAwareInterface) {
@@ -92,5 +100,13 @@ class BaseKernel implements KernelInterface
     public function getServices(): array
     {
         return $this->services;
+    }
+
+    /**
+     * {@inheritDoc}
+     */
+    public function getSourceRootPaths(): array
+    {
+        return $this->sourceRootPaths;
     }
 }

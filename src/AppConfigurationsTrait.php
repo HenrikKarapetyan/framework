@@ -100,7 +100,13 @@ trait AppConfigurationsTrait
 
     private function getSourcesRootPath(): string
     {
-        return $this->getDir('src');
+        $sourcesDir = 'src';
+        if (isset($this->environment->get('app')['sourcesDir'])) {
+            $sourcesDir = $this->environment->get('app')['sourcesDir'];
+        }
+        $this->environment->get('app')['env'];
+
+        return $this->getDir($sourcesDir);
     }
 
     private function getBaseParams(): array

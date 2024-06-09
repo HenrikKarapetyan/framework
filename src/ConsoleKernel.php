@@ -41,7 +41,7 @@ class ConsoleKernel extends BaseKernel
     /**
      * @return array<string>
      */
-    protected function getCommandPaths(): array
+    public function getCommandPaths(): array
     {
         return $this->commandPaths;
     }
