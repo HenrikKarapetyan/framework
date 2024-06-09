@@ -4,10 +4,10 @@ namespace Henrik\Framework;
 
 use Henrik\Contracts\ComponentInterface;
 use Henrik\Contracts\ComponentInterfaces\ControllerAwareInterface;
-use Henrik\Contracts\ComponentInterfaces\OnBootstrapAwareInterface;
+use Henrik\Contracts\ComponentInterfaces\OnWebBootstrapAwareInterface;
 use Henrik\Contracts\ComponentInterfaces\TemplateAwareInterface;
 
-class WebKernel extends BaseKernel
+class WebKernel extends ConsoleKernel
 {
     /** @var array<string> */
     protected array $controllerPaths = [];
@@ -43,8 +43,8 @@ class WebKernel extends BaseKernel
             $this->controllerPaths[] = $componentInstance->getControllersPath();
         }
 
-        if ($componentInstance instanceof OnBootstrapAwareInterface) {
-            $this->onBootstrapEvents = array_merge_recursive($this->onBootstrapEvents, $componentInstance->onBootstrapDispatchEvents());
+        if ($componentInstance instanceof OnWebBootstrapAwareInterface) {
+            $this->onBootstrapEvents = array_merge_recursive($this->onBootstrapEvents, $componentInstance->onWebBootstrapDispatchEvents());
         }
     }
 }

@@ -32,7 +32,7 @@ class App
 
     private ?string $configDir = null;
 
-    public function __construct(private KernelInterface $kernel)
+    public function __construct(private readonly KernelInterface $kernel)
     {
         $this->dependencyInjector = DependencyInjector::instance();
         $this->dependencyInjector->setMode(InjectorModes::AUTO_REGISTER);
@@ -57,14 +57,14 @@ class App
 
         $this->loadProjectSourceClasses();
 
+        if ($this->kernel instanceof WebKernel) {
+            $this->runWebKernel($this->kernel);
+        }
+
         if ($this->kernel instanceof ConsoleKernel) {
             $this->runConsoleKernel($this->kernel);
 
             return;
-        }
-
-        if ($this->kernel instanceof WebKernel) {
-            $this->runWebKernel($this->kernel);
         }
     }
 
@@ -73,6 +73,19 @@ class App
         $this->loadControllersByPath($kernel->getControllerPaths());
         $this->loadTemplatePath($kernel->getTemplatePaths());
 
+        $this->runBootstrapEvents($kernel);
+    }
+
+    private function runConsoleKernel(ConsoleKernel $kernel): void
+    {
+        /** @var CommandRunnerInterface $commandRunner */
+        $commandRunner = $this->dependencyInjector->get(CommandRunnerInterface::class);
+        $commandRunner->run($kernel->getArgc(), $kernel->getArgv());
+        $this->runBootstrapEvents($kernel);
+    }
+
+    private function runBootstrapEvents(KernelInterface $kernel): void
+    {
         $onBootstrapEvents = $kernel->getOnBootstrapEvents();
 
         foreach ($onBootstrapEvents as $eventDispatcherDefinitionId => $eventNamePairs) {
@@ -88,12 +101,5 @@ class App
 
             }
         }
-    }
-
-    private function runConsoleKernel(ConsoleKernel $kernel): void
-    {
-        /** @var CommandRunnerInterface $commandRunner */
-        $commandRunner = $this->dependencyInjector->get(CommandRunnerInterface::class);
-        $commandRunner->run($kernel->getArgc(), $kernel->getArgv());
     }
 }
