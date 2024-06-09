@@ -59,6 +59,7 @@ class App
 
         if ($this->kernel instanceof WebKernel) {
             $this->runWebKernel($this->kernel);
+            return;
         }
 
         if ($this->kernel instanceof ConsoleKernel) {
