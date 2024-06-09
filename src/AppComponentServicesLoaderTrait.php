@@ -95,15 +95,11 @@ trait AppComponentServicesLoaderTrait
     private function loadProjectSourceClasses(array $sourceRootPaths = []): void
     {
 
-        var_dump($this->getExcludedPaths());
         $classes = Filesystem::getPhpClassesFromDirectory($this->getSourcesRootPath(), $this->getRootNamespace(), $this->getExcludedPaths());
 
         if (!empty($sourceRootPaths)) {
             $classes = array_merge($classes, $this->getComponentSourceClasses($sourceRootPaths));
         }
-
-        var_dump($classes);
-        exit;
 
         if ($this->dependencyInjector->has(AttributesParserProcessorInterface::class)) {
             /** @var AttributesParserProcessorInterface $attributeParserProcessor */
