@@ -3,9 +3,9 @@
 namespace Henrik\Framework;
 
 use Henrik\Contracts\ComponentInterface;
-use Henrik\Contracts\ComponentInterfaces\ControllerAwareInterface;
+use Henrik\Contracts\ComponentInterfaces\OnControllerAwareInterface;
 use Henrik\Contracts\ComponentInterfaces\OnBootstrapAwareInterface;
-use Henrik\Contracts\ComponentInterfaces\TemplateAwareInterface;
+use Henrik\Contracts\ComponentInterfaces\OnTemplateAwareInterface;
 
 class WebKernel extends ConsoleKernel
 {
@@ -35,11 +35,11 @@ class WebKernel extends ConsoleKernel
     {
         parent::getComponentDefinitions($componentInstance);
 
-        if ($componentInstance instanceof TemplateAwareInterface) {
+        if ($componentInstance instanceof OnTemplateAwareInterface) {
             $this->templatePaths[] = $componentInstance->getTemplatesPath();
         }
 
-        if ($componentInstance instanceof ControllerAwareInterface) {
+        if ($componentInstance instanceof OnControllerAwareInterface) {
             $this->controllerPaths[] = $componentInstance->getControllersPath();
         }
 

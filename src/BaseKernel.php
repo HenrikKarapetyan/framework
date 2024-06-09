@@ -3,9 +3,9 @@
 namespace Henrik\Framework;
 
 use Henrik\Contracts\ComponentInterface;
-use Henrik\Contracts\ComponentInterfaces\AttributesAndParsersAwareInterface;
-use Henrik\Contracts\ComponentInterfaces\DependsOnAwareInterface;
-use Henrik\Contracts\ComponentInterfaces\EventSubscriberAwareInterface;
+use Henrik\Contracts\ComponentInterfaces\OnAttributesAndParsersAwareInterface;
+use Henrik\Contracts\ComponentInterfaces\OnDependsAwareInterface;
+use Henrik\Contracts\ComponentInterfaces\OnEventSubscriberAwareInterface;
 
 class BaseKernel implements KernelInterface
 {
@@ -39,7 +39,7 @@ class BaseKernel implements KernelInterface
             /** @var ComponentInterface $componentInstance */
             $componentInstance = new $component();
 
-            if ($componentInstance instanceof DependsOnAwareInterface) {
+            if ($componentInstance instanceof OnDependsAwareInterface) {
                 $this->initialize($componentInstance->dependsOn());
             }
 
@@ -51,12 +51,12 @@ class BaseKernel implements KernelInterface
     {
         $this->services = array_merge_recursive($this->services, $componentInstance->getServices());
 
-        if ($componentInstance instanceof EventSubscriberAwareInterface) {
+        if ($componentInstance instanceof OnEventSubscriberAwareInterface) {
 
             $this->eventSubscribers = array_merge_recursive($this->eventSubscribers, $componentInstance->getEventSubscribers());
         }
 
-        if ($componentInstance instanceof AttributesAndParsersAwareInterface) {
+        if ($componentInstance instanceof OnAttributesAndParsersAwareInterface) {
             $this->attrParsers = array_merge_recursive($this->attrParsers, $componentInstance->getAttributesAndParsers());
         }
 

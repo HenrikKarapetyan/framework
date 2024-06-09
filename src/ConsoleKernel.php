@@ -3,7 +3,7 @@
 namespace Henrik\Framework;
 
 use Henrik\Contracts\ComponentInterface;
-use Henrik\Contracts\ComponentInterfaces\CommandAwareInterface;
+use Henrik\Contracts\ComponentInterfaces\OnCommandAwareInterface;
 
 class ConsoleKernel extends BaseKernel
 {
@@ -20,8 +20,8 @@ class ConsoleKernel extends BaseKernel
     {
         parent::getComponentDefinitions($componentInstance);
 
-        if ($componentInstance instanceof CommandAwareInterface) {
-            $this->commandPaths = array_merge($componentInstance->getCommands(), $this->commandPaths);
+        if ($componentInstance instanceof OnCommandAwareInterface) {
+            $this->commandPaths[] = $componentInstance->getCommandsPath();
         }
     }
 
