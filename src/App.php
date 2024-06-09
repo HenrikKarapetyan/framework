@@ -24,11 +24,6 @@ class App
     /**
      * @var array<string>
      */
-    private array $controllerPaths = [];
-
-    /**
-     * @var array<string>
-     */
     private array $templatePaths = [];
 
     private ?string $configDir = null;
@@ -66,8 +61,6 @@ class App
 
         if ($this->kernel instanceof ConsoleKernel) {
             $this->runConsoleKernel($this->kernel);
-
-            return;
         }
     }
 
@@ -89,7 +82,6 @@ class App
 
     private function runWebKernel(WebKernel $kernel): void
     {
-        $this->loadControllersByPath($kernel->getControllerPaths());
         $this->loadTemplatePath($kernel->getTemplatePaths());
 
         $this->runBootstrapEvents($kernel);

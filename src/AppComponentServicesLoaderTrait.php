@@ -71,16 +71,6 @@ trait AppComponentServicesLoaderTrait
         }
     }
 
-    /**
-     * @param array<string> $controllerPaths
-     *
-     * @return void
-     */
-    protected function loadControllersByPath(array $controllerPaths): void
-    {
-        $this->controllerPaths = array_merge_recursive($controllerPaths, $this->controllerPaths);
-
-    }
 
     /**
      * @param array<string> $templatePaths

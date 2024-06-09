@@ -111,6 +111,7 @@ trait AppConfigurationsTrait
 
     private function getBaseParams(): array
     {
+
         $env = self::DEFAULT_ENV;
 
         if ($this->environment->has('app') && is_array($this->environment->get('app'))) {
