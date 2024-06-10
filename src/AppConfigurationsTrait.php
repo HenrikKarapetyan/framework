@@ -127,7 +127,7 @@ trait AppConfigurationsTrait
                 'cachePath'         => $this->getOutputDirectory() . DIRECTORY_SEPARATOR . $env . '/cache/',
                 'logsSaveDirectory' => $this->getOutputDirectory() . DIRECTORY_SEPARATOR . $env . '/logs/',
                 'cookies'           => [
-                    (new Cookie())->setName('default')->setValue('simple')->setHttpOnly(true)->setExpire(13123131)->setPath('/')->setDomain('.localhost')->setSecure(false),
+                    (new Cookie())->setName('app')->setValue('simple')->setHttpOnly(true)->setExpire(13123131)->setPath('/')->setDomain('.localhost')->setSecure(false),
                 ],
                 'sessionName' => 'app',
             ],
