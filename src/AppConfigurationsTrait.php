@@ -119,6 +119,25 @@ trait AppConfigurationsTrait
             $env = $this->environment->get('app')['env'];
         }
 
+        $sessionName = $this->environment->get('session')['name'];
+
+        $cookiesArray = [];
+        if (is_array($this->environment->get('cookies'))) {
+            foreach ($this->environment->get('cookies') as $cookies) {
+                foreach ($cookies as $name => $cookie) {
+                    $cookieObject = new Cookie();
+                    $cookieObject->setName($name);
+                    $cookieObject->setValue(isset($cookie['value']) ?? $cookie['value']);
+                    $cookieObject->setHttpOnly(isset($cookie['httpOnly']) ?? $cookie['httpOnly']);
+                    $cookieObject->setExpire(isset($cookie['expire']) ?? $cookie['expire']);
+                    $cookieObject->setPath(isset($cookie['path']) ?? $cookie['path']);
+                    $cookieObject->setDomain(isset($cookie['domain']) ?? $cookie['domain']);
+                    $cookieObject->setSecure(isset($cookie['secure']) ?? $cookie['secure']);
+                    $cookiesArray[] = $cookieObject;
+                }
+            }
+        }
+
         return [
             ServiceScope::PARAM->value => [
                 'viewDirectory'     => $this->getDir('templates'),
@@ -126,10 +145,8 @@ trait AppConfigurationsTrait
                 'sessionSavePath'   => $this->getOutputDirectory() . DIRECTORY_SEPARATOR . $env . '/session/',
                 'cachePath'         => $this->getOutputDirectory() . DIRECTORY_SEPARATOR . $env . '/cache/',
                 'logsSaveDirectory' => $this->getOutputDirectory() . DIRECTORY_SEPARATOR . $env . '/logs/',
-                'cookies'           => [
-                    (new Cookie())->setName('default')->setValue('simple')->setHttpOnly(true)->setExpire(13123131)->setPath('/')->setDomain('.localhost')->setSecure(false),
-                ],
-                'sessionName' => 'default',
+                'cookies'           => $cookiesArray,
+                'sessionName'       => $sessionName,
             ],
         ];
 
