@@ -123,18 +123,16 @@ trait AppConfigurationsTrait
 
         $cookiesArray = [];
         if (is_array($this->environment->get('cookies'))) {
-            foreach ($this->environment->get('cookies') as $cookies) {
-                foreach ($cookies as $name => $cookie) {
-                    $cookieObject = new Cookie();
-                    $cookieObject->setName($name);
-                    $cookieObject->setValue(isset($cookie['value']) ?? $cookie['value']);
-                    $cookieObject->setHttpOnly(isset($cookie['httpOnly']) ?? $cookie['httpOnly']);
-                    $cookieObject->setExpire(isset($cookie['expire']) ?? $cookie['expire']);
-                    $cookieObject->setPath(isset($cookie['path']) ?? $cookie['path']);
-                    $cookieObject->setDomain(isset($cookie['domain']) ?? $cookie['domain']);
-                    $cookieObject->setSecure(isset($cookie['secure']) ?? $cookie['secure']);
-                    $cookiesArray[] = $cookieObject;
-                }
+            foreach ($this->environment->get('cookies') as $name => $cookie) {
+                $cookieObject = new Cookie();
+                $cookieObject->setName($name);
+                $cookieObject->setValue(isset($cookie['value']) ?? $cookie['value']);
+                $cookieObject->setHttpOnly(isset($cookie['httpOnly']) ?? $cookie['httpOnly']);
+                $cookieObject->setExpire(isset($cookie['expire']) ?? $cookie['expire']);
+                $cookieObject->setPath(isset($cookie['path']) ?? $cookie['path']);
+                $cookieObject->setDomain(isset($cookie['domain']) ?? $cookie['domain']);
+                $cookieObject->setSecure(isset($cookie['secure']) ?? $cookie['secure']);
+                $cookiesArray[] = $cookieObject;
             }
         }
 
