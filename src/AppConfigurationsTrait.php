@@ -126,12 +126,12 @@ trait AppConfigurationsTrait
             foreach ($this->environment->get('cookies') as $name => $cookie) {
                 $cookieObject = new Cookie();
                 $cookieObject->setName($name);
-                $cookieObject->setValue(isset($cookie['value']) ?? $cookie['value']);
-                $cookieObject->setHttpOnly(isset($cookie['httpOnly']) ?? $cookie['httpOnly']);
-                $cookieObject->setExpire(isset($cookie['expire']) ?? $cookie['expire']);
-                $cookieObject->setPath(isset($cookie['path']) ?? $cookie['path']);
+                $cookieObject->setValue($cookie['value'] ?? '');
+                $cookieObject->setHttpOnly(!isset($cookie['httpOnly']) || (bool) $cookie['httpOnly']);
+                $cookieObject->setExpire(isset($cookie['expire']) ? (int) $cookie['expire'] : 3600);
+                $cookieObject->setPath($cookie['path'] ?? '/');
                 $cookieObject->setDomain(isset($cookie['domain']) ?? $cookie['domain']);
-                $cookieObject->setSecure(isset($cookie['secure']) ?? $cookie['secure']);
+                $cookieObject->setSecure(isset($cookie['secure']) && (bool) $cookie['secure']);
                 $cookiesArray[] = $cookieObject;
             }
         }
