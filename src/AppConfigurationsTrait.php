@@ -132,7 +132,7 @@ trait AppConfigurationsTrait
                 $cookieObject->setPath($cookie['path'] ?? '/');
                 $cookieObject->setDomain(isset($cookie['domain']) ?? $cookie['domain']);
                 $cookieObject->setSecure(isset($cookie['secure']) && (bool) $cookie['secure']);
-                $cookiesArray[] = $cookieObject;
+                $cookiesArray[$name] = $cookieObject;
             }
         }
 
