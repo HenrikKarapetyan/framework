@@ -6,6 +6,7 @@ use Henrik\Console\Interfaces\CommandRunnerInterface;
 use Henrik\Contracts\Enums\InjectorModes;
 use Henrik\Contracts\Environment\EnvironmentInterface;
 use Henrik\Contracts\EventDispatcherInterface;
+use Henrik\Contracts\Session\SessionInterface;
 use Henrik\DI\DependencyInjector;
 use Henrik\Env\Environment;
 use Henrik\Filesystem\Filesystem;

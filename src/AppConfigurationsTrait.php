@@ -143,7 +143,7 @@ trait AppConfigurationsTrait
                 'sessionSavePath'   => $this->getOutputDirectory() . DIRECTORY_SEPARATOR . $env . '/session/',
                 'cachePath'         => $this->getOutputDirectory() . DIRECTORY_SEPARATOR . $env . '/cache/',
                 'logsSaveDirectory' => $this->getOutputDirectory() . DIRECTORY_SEPARATOR . $env . '/logs/',
-                'cookies'           => $cookiesArray,
+                'sessionCookies'    => $cookiesArray,
                 'sessionName'       => $sessionName,
             ],
         ];
