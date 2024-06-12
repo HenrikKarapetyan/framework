@@ -17,6 +17,9 @@ use Henrik\DI\Exceptions\UnknownScopeException;
 use Henrik\Filesystem\Exceptions\FileNotFoundException;
 use Henrik\Filesystem\Filesystem;
 
+/**
+ * @SuppressWarnings(PHPMD.UnusedPrivateField)
+ */
 class App
 {
     use AppConfigurationsTrait;
@@ -73,7 +76,7 @@ class App
         /** @var string $currentEnvironment */
         $currentEnvironment = $this->environment->get('app.env');
         $this->environment->load($this->getEnvironmentFile($currentEnvironment));
-        $this->dependencyInjector->load($this->getBaseParams());
+        $this->dependencyInjector->load($this->getBaseParams()); // @phpstan-ignore-line
 
         $components = $this->getComponents();
         $this->kernel->initialize($components);

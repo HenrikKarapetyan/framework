@@ -88,11 +88,11 @@ trait AppComponentServicesLoaderTrait
     /**
      * @param array<string> $sourceRootPaths
      *
-     * @throws KeyAlreadyExistsException
      * @throws KeyNotFoundException
      * @throws ServiceNotFoundException
      * @throws UnknownScopeException|ReflectionException
-     * @throws ClassNotFoundException
+     * @throws ClassNotFoundException|Exceptions\ConfigurationException
+     * @throws KeyAlreadyExistsException
      *
      * @return void
      */
