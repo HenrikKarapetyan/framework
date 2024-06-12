@@ -3,12 +3,18 @@
 namespace Henrik\Framework;
 
 use Henrik\Console\Interfaces\CommandRunnerInterface;
+use Henrik\Container\Exceptions\KeyAlreadyExistsException;
+use Henrik\Container\Exceptions\KeyNotFoundException;
+use Henrik\Container\Exceptions\UndefinedModeException;
 use Henrik\Contracts\Enums\InjectorModes;
 use Henrik\Contracts\Environment\EnvironmentInterface;
 use Henrik\Contracts\EventDispatcherInterface;
-use Henrik\Contracts\Session\SessionInterface;
 use Henrik\DI\DependencyInjector;
-use Henrik\Env\Environment;
+use Henrik\DI\Exceptions\ClassNotFoundException;
+use Henrik\DI\Exceptions\ServiceNotFoundException;
+use Henrik\DI\Exceptions\UnknownConfigurationException;
+use Henrik\DI\Exceptions\UnknownScopeException;
+use Henrik\Filesystem\Exceptions\FileNotFoundException;
 use Henrik\Filesystem\Filesystem;
 
 class App
@@ -29,20 +35,44 @@ class App
 
     private ?string $configDir = null;
 
+    /**
+     * @param KernelInterface $kernel
+     *
+     * @throws UnknownScopeException
+     * @throws KeyNotFoundException
+     * @throws UndefinedModeException
+     * @throws ServiceNotFoundException
+     * @throws KeyAlreadyExistsException
+     * @throws ClassNotFoundException
+     * @throws UnknownConfigurationException
+     */
     public function __construct(private readonly KernelInterface $kernel)
     {
         $this->dependencyInjector = DependencyInjector::instance();
         $this->dependencyInjector->setMode(InjectorModes::AUTO_REGISTER);
         $rootServices = require 'config/baseServices.php';
         $this->dependencyInjector->load(array_merge_recursive($this->getServices(), $rootServices));
-        /** @var Environment $environment */
-        $this->environment = $this->dependencyInjector->get(EnvironmentInterface::class);
+        /** @var EnvironmentInterface $environment */
+        $environment       = $this->dependencyInjector->get(EnvironmentInterface::class);
+        $this->environment = $environment;
     }
 
+    /**
+     * @throws UndefinedModeException
+     * @throws UnknownConfigurationException
+     * @throws FileNotFoundException
+     * @throws UnknownScopeException
+     * @throws ServiceNotFoundException
+     * @throws KeyNotFoundException
+     * @throws KeyAlreadyExistsException
+     * @throws ClassNotFoundException
+     */
     public function run(): void
     {
         $this->environment->load($this->getEnvironmentFile());
-        $this->environment->load($this->getEnvironmentFile($this->environment->get('app')['env']));
+        /** @var string $currentEnvironment */
+        $currentEnvironment = $this->environment->get('app.env');
+        $this->environment->load($this->getEnvironmentFile($currentEnvironment));
         $this->dependencyInjector->load($this->getBaseParams());
 
         $components = $this->getComponents();
@@ -68,7 +98,7 @@ class App
     /**
      * @param array<string, string> $sourceRootPaths
      *
-     * @return string[]
+     * @return class-string[]
      */
     public function getComponentSourceClasses(array $sourceRootPaths): array
     {

@@ -6,12 +6,14 @@ use Henrik\Container\Exceptions\KeyAlreadyExistsException;
 use Henrik\Container\Exceptions\KeyNotFoundException;
 use Henrik\Contracts\AttributeParser\AttributesParserProcessorInterface;
 use Henrik\Contracts\EventDispatcherInterface;
+use Henrik\Contracts\EventSubscriberInterface;
 use Henrik\DI\Exceptions\ClassNotFoundException;
 use Henrik\DI\Exceptions\ServiceNotFoundException;
 use Henrik\DI\Exceptions\UnknownScopeException;
 use Henrik\Filesystem\Filesystem;
 use InvalidArgumentException;
 use ReflectionClass;
+use ReflectionException;
 
 trait AppComponentServicesLoaderTrait
 {
@@ -39,8 +41,10 @@ trait AppComponentServicesLoaderTrait
                     throw new InvalidArgumentException(sprintf('Given value must be array `%s` given!', gettype($eventSubscriberItems)));
                 }
 
-                foreach ($eventSubscriberItems as $eventSubscriber) {
-                    $eventDispatcher->addSubscriber($this->dependencyInjector->get($eventSubscriber));
+                foreach ($eventSubscriberItems as $eventSubscriberId) {
+                    /** @var EventSubscriberInterface $eventSubscriber */
+                    $eventSubscriber = $this->dependencyInjector->get($eventSubscriberId);
+                    $eventDispatcher->addSubscriber($eventSubscriber);
                 }
 
             }
@@ -81,27 +85,41 @@ trait AppComponentServicesLoaderTrait
         $this->templatePaths = array_merge_recursive($templatePaths, $this->templatePaths);
     }
 
+    /**
+     * @param array<string> $sourceRootPaths
+     *
+     * @throws KeyAlreadyExistsException
+     * @throws KeyNotFoundException
+     * @throws ServiceNotFoundException
+     * @throws UnknownScopeException|ReflectionException
+     * @throws ClassNotFoundException
+     *
+     * @return void
+     */
     private function loadProjectSourceClasses(array $sourceRootPaths = []): void
     {
 
         $classes = Filesystem::getPhpClassesFromDirectory($this->getSourcesRootPath(), $this->getRootNamespace(), $this->getExcludedPaths());
 
+        /**
+         * Here we're merging component sources classes with project source classes.
+         */
         if (!empty($sourceRootPaths)) {
             $classes = array_merge($classes, $this->getComponentSourceClasses($sourceRootPaths));
         }
 
         if ($this->dependencyInjector->has(AttributesParserProcessorInterface::class)) {
+
             /** @var AttributesParserProcessorInterface $attributeParserProcessor */
             $attributeParserProcessor = $this->dependencyInjector->get(AttributesParserProcessorInterface::class);
 
             foreach ($classes as $classOrClasses) {
 
-                if (is_array($classOrClasses)) {
-                    foreach ($classOrClasses as $class) {
-                        $this->processAttributes($class, $attributeParserProcessor);
-                    }
-                }
-
+                //                if (is_array($classOrClasses)) {
+                //                    foreach ($classOrClasses as $class) {
+                //                        $this->processAttributes($class, $attributeParserProcessor);
+                //                    }
+                //                }
                 if (is_string($classOrClasses)) {
                     $this->processAttributes($classOrClasses, $attributeParserProcessor);
                 }
@@ -109,6 +127,14 @@ trait AppComponentServicesLoaderTrait
         }
     }
 
+    /**
+     * @param class-string                       $class
+     * @param AttributesParserProcessorInterface $attributeParserProcessor
+     *
+     * @throws ReflectionException
+     *
+     * @return void
+     */
     private function processAttributes(string $class, AttributesParserProcessorInterface $attributeParserProcessor): void
     {
         $reflectionClass = new ReflectionClass($class);

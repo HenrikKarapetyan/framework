@@ -17,6 +17,11 @@ trait AppConfigurationsTrait
         return $this->getDir('config');
     }
 
+    public function setConfigDir(string $dir): void
+    {
+        $this->configDir = $dir;
+    }
+
     public function getProjectDir(): bool|string
     {
         $docRoot = $_SERVER['DOCUMENT_ROOT'];
@@ -116,10 +121,10 @@ trait AppConfigurationsTrait
         $env = self::DEFAULT_ENV;
 
         if ($this->environment->has('app') && is_array($this->environment->get('app'))) {
-            $env = $this->environment->get('app')['env'];
+            $env = $this->environment->get('app.env');
         }
 
-        $sessionName = $this->environment->get('session')['name'];
+        $sessionName = $this->environment->get('session.name');
 
         $cookiesArray = [];
         if (is_array($this->environment->get('cookies'))) {
