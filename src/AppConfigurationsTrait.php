@@ -17,7 +17,7 @@ trait AppConfigurationsTrait
     public function getConfigDir(): bool|string
     {
         $configDir = 'config';
-        if (!isset($this->configDir)) {
+        if (isset($this->configDir)) {
             $configDir = $this->configDir;
         }
 
