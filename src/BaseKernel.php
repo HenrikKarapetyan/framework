@@ -60,6 +60,7 @@ class BaseKernel implements KernelInterface
             $this->eventSubscribers = array_merge_recursive($this->eventSubscribers, $componentInstance->getEventSubscribers());
         }
 
+        // here we're getting all source classes by Attributes
         if ($componentInstance instanceof OnSourcesAwareInterface) {
             $this->sourceRootPaths = array_merge($this->sourceRootPaths, $componentInstance->getSourcesDirectories());
         }
